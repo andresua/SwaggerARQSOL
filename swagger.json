@@ -31,6 +31,14 @@
         "description": "Más info",
         "url": "https://www.blog.nidoo.co"
       }
+    },
+    {
+      "name": "notificacion",
+      "description": "Notificaciones por la App a los usuarios",
+      "externalDocs": {
+        "description": "Más info",
+        "url": "https://www.blog.nidoo.co"
+      }
     }
   ],
   "schemes": [
@@ -143,7 +151,7 @@
             "description": "ID de la regla",
             "required": true,
             "type": "string",
-            "format": "string"
+            "format": "int64"
           }
         ],
         "responses": {
@@ -158,6 +166,48 @@
           },
           "404": {
             "description": "Regla no encontrada"
+          }
+        }
+      }
+    },
+    "/rules/execute/{id}": {
+      "post": {
+        "tags": [
+          "regla"
+        ],
+        "summary": "Ejecutar una regla para una reserva",
+        "description": "Ejecutar las reglas asociadas a una reserva",
+        "operationId": "executeRules",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID de la reserva",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa"
+          },
+          "400": {
+            "description": "ID inválido"
+          },
+          "404": {
+            "description": "Reserva no encontrada"
+          },
+          "500": {
+            "description": "Ocurrió un error al momento de ejecutar la regla"
           }
         }
       }
@@ -191,7 +241,10 @@
         ],
         "responses": {
           "200": {
-            "description": "Operación exitosa"
+            "description": "Operación exitosa",
+            "schema": {
+              "$ref": "#/definitions/ReservationExecutionResult"
+            }
           },
           "400": {
             "description": "ID Inválido"
@@ -231,7 +284,10 @@
         ],
         "responses": {
           "200": {
-            "description": "Operación exitosa"
+            "description": "Operación exitosa",
+            "schema": {
+              "$ref": "#/definitions/ReservationExecutionResult"
+            }
           },
           "400": {
             "description": "ID Inválido"
@@ -268,7 +324,7 @@
             "description": "ID de la reserva",
             "required": true,
             "type": "string",
-            "format": "string"
+            "format": "int64"
           }
         ],
         "responses": {
@@ -308,7 +364,7 @@
             "description": "ID de la reserva",
             "required": true,
             "type": "string",
-            "format": "string"
+            "format": "int64"
           }
         ],
         "responses": {
@@ -323,59 +379,305 @@
           }
         }
       }
+    },
+    "/notification": {
+      "put": {
+        "tags": [
+          "notificacion"
+        ],
+        "summary": "Crear una notificación",
+        "description": "Enviar una notificación nueva hacia un usuario por la App",
+        "operationId": "createNotification",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Objeto de notificacion que debe ser enviado",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Notification"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa"
+          },
+          "400": {
+            "description": "ID Inválido"
+          },
+          "405": {
+            "description": "Ocurrió un error en la validación"
+          },
+          "409": {
+            "description": "Ya existe una notifiación con ese ID"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "notificacion"
+        ],
+        "summary": "Actualizar notificación",
+        "description": "Actualizar una notificación en la App si no ha sido enviada, si fue enviada responde como si no la encontrara",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Objeto de notificación que debe ser actualizado",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Notification"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa"
+          },
+          "400": {
+            "description": "ID Inválido"
+          },
+          "404": {
+            "description": "Notificación no encontrada con ese ID"
+          },
+          "405": {
+            "description": "Ocurrió un error en la validación"
+          }
+        }
+      }
+    },
+    "/notification/{id}": {
+      "get": {
+        "tags": [
+          "notificacion"
+        ],
+        "summary": "Obtener una notificación",
+        "description": "Obtener una notificación enviada que no haya sido entregada",
+        "operationId": "getNotificacion",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID de la notificación",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa",
+            "schema": {
+              "$ref": "#/definitions/Notification"
+            }
+          },
+          "400": {
+            "description": "ID inválido"
+          },
+          "404": {
+            "description": "Notificación no encontrada"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "notificacion"
+        ],
+        "summary": "Eliminar notificación",
+        "description": "Eliminar una notificación no enviada, si ya fue enviada se responde como no existente",
+        "operationId": "deleteNotificacion",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/xml",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID de la notificación",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación exitosa"
+          },
+          "400": {
+            "description": "ID inválido"
+          },
+          "404": {
+            "description": "Notificación no encontrada"
+          }
+        }
+      }
     }
   },
   "definitions": {
     "Rule": {
       "type": "object",
       "properties": {
-        "id": {
+        "idRegla": {
           "type": "integer",
           "format": "int64"
         },
-        "petId": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "quantity": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "shipDate": {
+        "timeTransaccion": {
           "type": "string",
           "format": "date-time"
         },
-        "status": {
+        "timeUltimaModificacion": {
           "type": "string",
-          "description": "Order Status",
-          "enum": [
-            "placed",
-            "approved",
-            "delivered"
-          ]
+          "format": "date-time"
         },
-        "complete": {
-          "type": "boolean",
-          "default": false
+        "estadoRegla": {
+          "type": "boolean"
+        },
+        "itemsEscogidos": {
+          "type": "array",
+          "description": "Ítems seleccionados por la regla",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          }
         }
       },
       "xml": {
-        "name": "Order"
+        "name": "Rule"
       }
     },
     "Reservation": {
       "type": "object",
       "properties": {
-        "id": {
+        "idReserva": {
           "type": "integer",
           "format": "int64"
+        },
+        "idParqueadero": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "idCliente": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "timeTransaccion": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "timeEntrada": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "timeSalida": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "formaPago": {
+          "type": "string",
+          "format": "string"
+        },
+        "idVehiculo": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "precioReserva": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "xml": {
+        "name": "Reservation"
+      }
+    },
+    "ReservationExecutionResult": {
+      "type": "object",
+      "properties": {
+        "idReserva": {
+          "type": "string",
+          "format": "int64"
+        },
+        "idParqueadero": {
+          "type": "string",
+          "format": "int64"
+        },
+        "resultadoEjecucion": {
+          "type": "boolean"
+        },
+        "timeTransaccion": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "idsReglasRechazadas": {
+          "type": "array",
+          "description": "Reglas que fueron rechazadas para la reserva",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "xml": {
+        "name": "ReservationExecutionResult"
+      }
+    },
+    "Notification": {
+      "type": "object",
+      "properties": {
+        "idReserva": {
+          "type": "string",
+          "format": "int64"
+        },
+        "idCliente": {
+          "type": "string",
+          "format": "int64"
+        },
+        "idParqueadero": {
+          "type": "string",
+          "format": "int64"
+        },
+        "estadoReserva": {
+          "type": "boolean"
+        },
+        "timeNotificacion": {
+          "type": "string",
+          "format": "date-time"
         },
         "name": {
           "type": "string"
         }
       },
       "xml": {
-        "name": "Category"
+        "name": "Notification"
       }
     }
   },
