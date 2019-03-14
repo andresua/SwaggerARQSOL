@@ -679,6 +679,17 @@
       "xml": {
         "name": "Notification"
       }
+    },
+    "ReservationExecutionResultTest": {
+      "type": "array",
+          "description": "Reglas que fueron rechazadas para la reserva",
+       "items": {
+            "type": "integer",
+            "format": "int64"
+          },
+      "xml": {
+        "name": "ReservationExecutionResult"
+      }
     }
   },
   "externalDocs": {
