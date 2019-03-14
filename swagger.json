@@ -369,7 +369,10 @@
         ],
         "responses": {
           "200": {
-            "description": "Operación exitosa"
+            "description": "Operación exitosa",
+            "schema": {
+              "$ref": "#/definitions/ReservationExecutionResultTest"
+            }
           },
           "400": {
             "description": "ID inválido"
